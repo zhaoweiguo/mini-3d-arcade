@@ -34,4 +34,5 @@ games/<project>/latest/   # 当前推荐版本入口，跳转到最新稳定版�
 
 - `games/pelican-ride/v1/`：鹈鹕骑行俱乐部
 - `games/neon-bay-rush/v1/`：Neon Bay Rush
-- `games/transport-ship/v1/`：运输船甲板冲突
+- `games/transport-ship/v1/`：运输船甲板冲突（早期原型）
+- `games/transport-ship/v2/`：钢潮运输船 STEELWAKE（GPT-6 Sol + Codex 实现的 Three.js/Vite 第一人称 FPS）

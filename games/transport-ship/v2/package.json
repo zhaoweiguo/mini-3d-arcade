@@ -1,0 +1,23 @@
+{
+  "name": "steelwake-fps",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --open /source/",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "three": "^0.186.0",
+    "three-pathfinding": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0",
+    "vitest": "^3.2.4"
+  }
+}
