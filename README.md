@@ -1,0 +1,23 @@
+# Mini 3D Arcade
+
+浏览器 3D 小游戏合集。每个小游戏独立放在 `games/<project>/` 下，并按版本保留历史实现。
+
+## 目录约定
+
+```text
+games/<project>/v1/       # 不可变的具体版本
+games/<project>/v2/       # 后续版本，新增而不是覆盖
+games/<project>/latest/   # 当前推荐版本入口
+```
+
+首页只链接 `latest/`。发布新版本时：
+
+1. 复制上一版本到新的 `vN/` 目录并实现改动。
+2. 验证新版本后，将 `latest/index.html` 的跳转目标更新到新的版本目录。
+3. 保留旧版本目录，保证历史链接和回滚能力。
+
+当前项目：
+
+- `games/pelican-ride/v1/`：鹈鹕骑行俱乐部
+- `games/neon-bay-rush/v1/`：Neon Bay Rush
+- `games/transport-ship/v1/`：运输船甲板冲突
