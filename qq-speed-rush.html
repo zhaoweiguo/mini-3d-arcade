@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#06121c">
+  <meta name="description" content="Neon Bay Rush：浏览器内可玩的原创 3D 街机竞速与漂移体验。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2306121c'/%3E%3Cpath d='M12 43 25 17l8 15 7-11 12 22H12Z' fill='%23ffcf4a'/%3E%3C/svg%3E">
+  <title>NEON BAY RUSH — 3D 竞速</title>
+  <style>
+    :root{color-scheme:dark;--ink:#e9f7f3;--muted:#8da8aa;--cyan:#72e6da;--yellow:#ffcf4a;--pink:#fb6a84;--panel:rgba(5,17,27,.78);--line:rgba(194,246,239,.2)}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06121c;color:var(--ink);font-family:Inter,"Avenir Next",Avenir,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    .game{position:fixed;inset:0;background:#06121c}.game canvas{position:absolute;inset:0;width:100%;height:100%;display:block}.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 47%,transparent 42%,rgba(2,7,12,.48) 100%)}
+    .topbar{position:absolute;z-index:3;left:clamp(15px,3vw,42px);right:clamp(15px,3vw,42px);top:clamp(14px,2.3vw,30px);display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:12px;letter-spacing:.17em}.brand-mark{width:31px;height:31px;display:grid;place-items:center;border:1px solid rgba(114,230,218,.65);color:var(--yellow);font-size:14px;transform:skew(-12deg)}.event{font:10px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.11em;text-align:right;color:var(--muted);text-transform:uppercase}.event b{color:var(--yellow);font-weight:600}
+    .hud{position:absolute;z-index:3;top:clamp(70px,10vh,102px);left:clamp(15px,3vw,42px);display:flex;gap:8px;align-items:flex-start;pointer-events:none}.stat{min-width:92px;padding:9px 11px;border-left:2px solid var(--cyan);background:rgba(5,17,27,.55);backdrop-filter:blur(8px)}.stat label{display:block;color:var(--muted);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em}.stat strong{display:block;margin-top:3px;font:650 22px/1 "Arial Narrow",Impact,sans-serif;letter-spacing:.02em}.stat strong em{font-style:normal;font-size:10px;color:var(--muted);margin-left:3px}.stat.yellow{border-color:var(--yellow)}.stat.pink{border-color:var(--pink)}
+    .progress{position:absolute;z-index:3;top:clamp(71px,10vh,102px);right:clamp(15px,3vw,42px);width:min(220px,28vw);pointer-events:none}.progress-head{display:flex;justify-content:space-between;color:var(--muted);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em}.progress-track{height:4px;margin-top:8px;background:rgba(233,247,243,.2);overflow:hidden}.progress-fill{width:0;height:100%;background:linear-gradient(90deg,var(--cyan),var(--yellow));transition:width .1s linear}.nitro{margin-top:11px}.nitro .progress-fill{background:linear-gradient(90deg,#67c8ff,#b687ff,var(--pink))}
+    .mission{position:absolute;z-index:3;top:39%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .2s}.mission.show{opacity:1}.mission b{display:block;font:900 clamp(42px,7vw,92px)/.86 Impact,"Arial Narrow",sans-serif;letter-spacing:.04em;color:var(--yellow);text-shadow:0 3px 0 #552e3d,0 0 30px rgba(255,207,74,.45);font-style:italic}.mission span{display:block;margin-top:11px;color:var(--ink);font:10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.25em}
+    .controls{position:absolute;z-index:4;right:clamp(15px,3vw,42px);bottom:clamp(15px,3vw,36px);display:flex;align-items:flex-end;gap:10px}.legend{display:grid;grid-template-columns:repeat(4,auto);gap:4px;padding:8px 10px;border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(9px);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}.legend span{display:inline-flex;align-items:center;gap:5px;margin-right:4px}.key{display:grid;place-items:center;min-width:19px;height:19px;padding:0 4px;border:1px solid rgba(233,247,243,.35);color:var(--ink);font-size:9px}.key.wide{min-width:37px}.action-buttons{display:flex;gap:5px}.icon-btn{width:39px;height:39px;display:grid;place-items:center;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;transition:background .16s,border-color .16s}.icon-btn:hover{border-color:var(--cyan);background:rgba(21,69,79,.84)}.icon-btn:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}.icon-btn[aria-pressed="true"]{background:var(--cyan);color:#06121c;border-color:var(--cyan)}.icon-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .help{position:absolute;z-index:3;left:50%;bottom:clamp(82px,12vh,122px);transform:translateX(-50%);color:rgba(233,247,243,.58);font:9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.13em;white-space:nowrap;pointer-events:none}.status{position:absolute;z-index:3;left:clamp(15px,3vw,42px);bottom:clamp(18px,3vw,36px);color:var(--muted);font:10px ui-monospace,SFMono-Regular,Menlo,monospace;pointer-events:none}.status b{color:var(--cyan);font-weight:600}.toast{position:absolute;z-index:5;left:50%;top:23px;transform:translate(-50%,-14px);padding:9px 14px;background:rgba(5,17,27,.94);border:1px solid var(--line);color:var(--ink);font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:760px){.topbar{top:13px}.event{font-size:8px}.hud{top:68px;gap:4px}.stat{min-width:73px;padding:7px 8px}.stat strong{font-size:18px}.progress{top:68px;width:135px}.legend{display:none}.controls{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));gap:5px}.icon-btn{width:36px;height:36px}.help{bottom:67px;font-size:8px}.status{bottom:calc(16px + env(safe-area-inset-bottom));font-size:8px;max-width:165px}.mission{top:39%}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <main class="game" id="game" aria-label="NEON BAY RUSH 3D 竞速游戏">
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="topbar"><div class="brand"><span class="brand-mark">N</span><span>NEON BAY RUSH</span></div><div class="event"><b>COASTAL GRAND PRIX</b><br>ORIGINAL TRACK / NIGHT RUN</div></header>
+    <section class="hud" aria-label="比赛数据"><div class="stat"><label>SPEED</label><strong id="speedValue">0<em>KM/H</em></strong></div><div class="stat yellow"><label>LAP</label><strong id="lapValue">01<em>/ 03</em></strong></div><div class="stat pink"><label>DRIFT</label><strong id="driftValue">0<em>%</em></strong></div></section>
+    <section class="progress" aria-label="赛道进度"><div class="progress-head"><span>TRACK POSITION</span><span id="distanceValue">00.0 KM</span></div><div class="progress-track"><div class="progress-fill" id="trackFill"></div></div><div class="progress-head nitro"><span>NITRO CHARGE</span><span id="nitroValue">100%</span></div><div class="progress-track"><div class="progress-fill" id="nitroFill" style="width:100%"></div></div></section>
+    <div class="mission" id="mission"><b id="missionTitle">READY</b><span id="missionSub">按 W / ↑ 开始加速</span></div>
+    <div class="status" id="status"><b>驾驶员 01</b>　新手赛道　·　漂移训练模式</div>
+    <div class="help">WASD / 方向键 驾驶　·　SHIFT 漂移　·　SPACE 氮气　·　P 暂停　·　R 重置</div>
+    <div class="controls"><div class="legend" aria-label="键位说明"><span><i class="key">W</i>加速</span><span><i class="key">S</i>刹车</span><span><i class="key">A</i><i class="key">D</i>转向</span><span><i class="key wide">SHIFT</i>漂移</span><span><i class="key wide">SPACE</i>氮气</span></div><div class="action-buttons"><button class="icon-btn" id="pauseBtn" type="button" aria-label="暂停比赛" title="暂停比赛"><svg id="pauseIcon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button><button class="icon-btn" id="resetBtn" type="button" aria-label="重置比赛" title="重置比赛"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.2"/><path d="M4 4v5h5"/></svg></button><button class="icon-btn" id="audioBtn" type="button" aria-label="切换引擎音效" title="切换引擎音效"><svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6l-5 4H4ZM17 9a5 5 0 0 1 0 6M19 6.5a8.5 8.5 0 0 1 0 11"/></svg></button></div></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div><div class="sr-only">这是原创街机竞速赛道。使用 WASD 或方向键驾驶，Shift 漂移，空格释放氮气。</div>
+  </main>
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+    const $=s=>document.querySelector(s), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const CFG={maxSpeed:58,acceleration:26,brakePower:42,rollingDrag:8,turnRate:1.65,driftTurnRate:2.9,driftChargeRate:.34,nitroAcceleration:28,nitroDrain:.38};
+    const createState=()=>({speed:0,heading:0,lateral:0,drift:0,nitro:1,boosting:false});
+    function stepRace(p,input={},dt=1/60){const s={...p};const steer=(input.left?-1:0)+(input.right?1:0);const drifting=!!(input.drift&&Math.abs(steer)&&s.speed>4);if(input.accelerate)s.speed+=CFG.acceleration*dt;else s.speed-=CFG.rollingDrag*dt;if(input.brake)s.speed-=CFG.brakePower*dt;s.boosting=!!(input.nitro&&s.nitro>0&&s.speed>8);if(s.boosting){s.speed+=CFG.nitroAcceleration*dt;s.nitro=clamp(s.nitro-CFG.nitroDrain*dt,0,1)}s.speed=clamp(s.speed,0,CFG.maxSpeed+(s.boosting?16:0));const turnScale=.22+(s.speed/CFG.maxSpeed)*.78;s.heading+=steer*(drifting?CFG.driftTurnRate:CFG.turnRate)*turnScale*dt;if(drifting){s.lateral+=steer*(.9+s.speed/34)*dt;s.drift=clamp(s.drift+CFG.driftChargeRate*dt*(.5+s.speed/CFG.maxSpeed),0,1)}else{s.lateral*=Math.max(0,1-dt*5.5);s.drift=clamp(s.drift-dt*.2,0,1)}return s}
+    const scene=new THREE.Scene();scene.background=new THREE.Color('#071722');scene.fog=new THREE.Fog('#071722',18,90);const camera=new THREE.PerspectiveCamera(58,1,.1,180);const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.22;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('#game').append(renderer.domElement);
+    scene.add(new THREE.HemisphereLight(0x8ed9dc,0x06121c,1.3));const moon=new THREE.DirectionalLight(0xb7ddff,2.2);moon.position.set(-20,28,16);moon.castShadow=true;moon.shadow.mapSize.set(2048,2048);moon.shadow.camera.left=-32;moon.shadow.camera.right=32;moon.shadow.camera.top=32;moon.shadow.camera.bottom=-32;scene.add(moon);const cyanLight=new THREE.PointLight(0x51e8d5,28,24,2);cyanLight.position.set(0,3,0);scene.add(cyanLight);const pinkLight=new THREE.PointLight(0xfb6a84,18,22,2);pinkLight.position.set(8,2,-8);scene.add(pinkLight);
+    const M={asphalt:new THREE.MeshStandardMaterial({color:'#263943',roughness:.9}),edge:new THREE.MeshStandardMaterial({color:'#4ce0d0',emissive:'#125d59',emissiveIntensity:2.3,roughness:.34}),edgePink:new THREE.MeshStandardMaterial({color:'#ff6683',emissive:'#661d34',emissiveIntensity:2.2,roughness:.35}),stripe:new THREE.MeshBasicMaterial({color:'#d7fff4'}),sand:new THREE.MeshStandardMaterial({color:'#8b7f68',roughness:1}),water:new THREE.MeshStandardMaterial({color:'#0c4b62',roughness:.35,metalness:.2}),rock:new THREE.MeshStandardMaterial({color:'#182d37',roughness:.95}),car:new THREE.MeshStandardMaterial({color:'#ed5570',roughness:.3,metalness:.25}),carDark:new THREE.MeshStandardMaterial({color:'#16252c',roughness:.28,metalness:.45}),glass:new THREE.MeshStandardMaterial({color:'#75e0df',roughness:.12,metalness:.15,transparent:true,opacity:.72}),yellow:new THREE.MeshStandardMaterial({color:'#ffcf4a',emissive:'#9b4d09',emissiveIntensity:1.8}),white:new THREE.MeshStandardMaterial({color:'#e8fbef',roughness:.45}),black:new THREE.MeshStandardMaterial({color:'#061015',roughness:.86}),green:new THREE.MeshStandardMaterial({color:'#22615e',roughness:.9})};
+    const trackCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,-24),new THREE.Vector3(16,0,-19),new THREE.Vector3(23,0,-4),new THREE.Vector3(17,0,11),new THREE.Vector3(2,0,20),new THREE.Vector3(-15,0,17),new THREE.Vector3(-24,0,4),new THREE.Vector3(-18,0,-12)],true,'catmullrom',.18);const samples=260;const trackLength=trackCurve.getLength();const safeTrackT=t=>Math.min(.999999,Math.max(0,t));
+    function ribbon(width,y,material){const pos=[],uv=[],idx=[];for(let i=0;i<=samples;i++){const t=i/samples,p=trackCurve.getPointAt(t),tan=trackCurve.getTangentAt(t).normalize(),side=new THREE.Vector3(-tan.z,0,tan.x);pos.push(p.x+side.x*width/2,y,p.z+side.z*width/2,p.x-side.x*width/2,y,p.z-side.z*width/2);uv.push(i/samples,0,i/samples,1);if(i<samples){const n=i*2;idx.push(n,n+1,n+2,n+1,n+3,n+2)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();const mesh=new THREE.Mesh(g,material);mesh.receiveShadow=true;scene.add(mesh);return mesh}
+    ribbon(9,0,M.asphalt);ribbon(9.55,.045,M.edge);ribbon(8.45,.07,M.asphalt);
+    for(let i=0;i<samples;i+=10){const t=i/samples,p=trackCurve.getPointAt(t),tan=trackCurve.getTangentAt(t).normalize(),side=new THREE.Vector3(-tan.z,0,tan.x);const dash=new THREE.Mesh(new THREE.BoxGeometry(.16,.035,.95),M.stripe);dash.position.copy(p);dash.position.y=.11;dash.rotation.y=Math.atan2(tan.x,tan.z);scene.add(dash);for(const sign of [-1,1]){const lamp=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.5,8),sign===1?M.edgePink:M.edge);lamp.position.copy(p).addScaledVector(side,sign*4.72);lamp.position.y=.25;scene.add(lamp)}}
+    const world=new THREE.Group();scene.add(world);const sea=new THREE.Mesh(new THREE.PlaneGeometry(150,150),M.water);sea.rotation.x=-Math.PI/2;sea.position.y=-.95;sea.receiveShadow=true;world.add(sea);const island=new THREE.Mesh(new THREE.CylinderGeometry(44,50,1,80),M.sand);island.position.y=-.7;island.receiveShadow=true;world.add(island);
+    for(let i=0;i<40;i++){const a=i*Math.PI*2/40,r=31+(i%5)*2.2;const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.8+(i%4)*.34,1),M.rock);rock.position.set(Math.cos(a)*r,-.05,Math.sin(a)*r);rock.scale.y=1.5;rock.castShadow=true;world.add(rock)}
+    function addGate(){const g=new THREE.Group();const p=trackCurve.getPointAt(0),tan=trackCurve.getTangentAt(0).normalize(),rot=Math.atan2(tan.x,tan.z);g.position.copy(p);g.rotation.y=rot;for(const x of [-4.2,4.2]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,4.2,12),M.yellow);post.position.set(x,2.1,0);post.castShadow=true;g.add(post)}const beam=new THREE.Mesh(new THREE.BoxGeometry(8.7,.33,.28),M.yellow);beam.position.y=4.1;beam.castShadow=true;g.add(beam);for(let i=0;i<7;i++){const light=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),i%2?M.edge:M.edgePink);light.position.set(-3.6+i*1.2,4.1,.2);g.add(light)}scene.add(g)}addGate();
+    function addPalm(x,z){const g=new THREE.Group();const h=1.5+(Math.abs(x+z)%3)*.5;const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,h,10),M.green);trunk.position.y=h/2;g.add(trunk);for(let i=0;i<7;i++){const leaf=new THREE.Mesh(new THREE.ConeGeometry(.08,.95,6),M.green);leaf.position.set(Math.cos(i)*.38,h+.1+Math.sin(i)*.06,Math.sin(i)*.38);leaf.rotation.z=Math.sin(i)*.9;leaf.rotation.x=Math.cos(i)*.35;g.add(leaf)}g.position.set(x,-.15,z);world.add(g)}for(let i=0;i<16;i++){const a=i*Math.PI*2/16;addPalm(Math.cos(a)*(18+(i%2)*2),Math.sin(a)*(18+(i%3)*1.5))}
+    function box(parent,material,pos,scale,rot=0){const m=new THREE.Mesh(new THREE.BoxGeometry(...scale),material);m.position.set(...pos);m.rotation.y=rot;m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}function cyl(parent,material,pos,r,h,rot=0){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,12),material);m.position.set(...pos);m.rotation.z=rot;m.castShadow=true;parent.add(m);return m}
+    const car=new THREE.Group();scene.add(car);car.scale.setScalar(1.15);box(car,M.car,[0,.72,0],[1.7,.48,3.25],0);box(car,M.carDark,[0,1.04,.26],[1.25,.26,1.45],0);const cockpit=box(car,M.glass,[0,1.22,.32],[1.05,.32,1.04],0);cockpit.rotation.x=-.16;box(car,M.yellow,[0,.75,-1.68],[1.5,.12,.18]);box(car,M.car,[0,.56,1.72],[1.35,.32,.24]);for(const x of [-.68,.68]){for(const z of [-1.05,1.05]){const wh=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,.22,18),M.black);wh.rotation.z=Math.PI/2;wh.position.set(x,.43,z);wh.castShadow=true;car.add(wh)}}const tailLights=[];for(const x of [-.48,.48])tailLights.push(box(car,M.edgePink,[x,.86,1.66],[.32,.1,.06]));const flameGroup=new THREE.Group();car.add(flameGroup);for(const x of [-.42,.42]){const f=new THREE.Mesh(new THREE.ConeGeometry(.13,.85,10),M.yellow);f.rotation.x=-Math.PI/2;f.position.set(x,.67,1.98);f.visible=false;flameGroup.add(f)}
+    const input={accelerate:false,brake:false,left:false,right:false,drift:false,nitro:false};const keys=new Set();const keyMap={KeyW:'accelerate',ArrowUp:'accelerate',KeyS:'brake',ArrowDown:'brake',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right',ShiftLeft:'drift',ShiftRight:'drift',Space:'nitro'};window.addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='KeyP')togglePause();if(e.code==='KeyR')resetRace();if(keyMap[e.code])input[keyMap[e.code]]=true});window.addEventListener('keyup',e=>{keys.delete(e.code);if(keyMap[e.code])input[keyMap[e.code]]=false});
+    let race={...createState(),speed:11},progress=0,lap=1,paused=false,started=false,elapsed=0,last=performance.now(),toastTimer=0,engine=null,engineGain=null;
+    function notify(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1700)}function resetRace(){race={...createState(),speed:11};progress=0;lap=1;paused=false;started=false;$('#pauseBtn').setAttribute('aria-pressed','false');$('#missionTitle').textContent='READY';$('#missionSub').textContent='按 W / ↑ 开始加速';$('#mission').classList.add('show');notify('比赛已重置')}
+    function togglePause(){paused=!paused;$('#pauseBtn').setAttribute('aria-pressed',String(paused));$('#missionTitle').textContent=paused?'PAUSED':'READY';$('#missionSub').textContent=paused?'按 P 或点击按钮继续':'按 W / ↑ 开始加速';$('#mission').classList.toggle('show',paused||!started);if(!paused)notify('继续比赛');}
+    $('#pauseBtn').onclick=togglePause;$('#resetBtn').onclick=resetRace;let audioOn=false;$('#audioBtn').onclick=async()=>{audioOn=!audioOn;$('#audioBtn').setAttribute('aria-pressed',String(audioOn));if(audioOn){try{engine=new (window.AudioContext||window.webkitAudioContext)();engineGain=engine.createGain();engineGain.gain.value=.025;engineGain.connect(engine.destination);notify('引擎音效已开启')}catch{audioOn=false;notify('浏览器不允许音频')}}else{if(engine)engine.close();engine=null;notify('引擎音效已关闭')}};
+    const updateUI=()=>{$('#speedValue').innerHTML=`${Math.round(race.speed*3.6)}<em>KM/H</em>`;$('#lapValue').innerHTML=`${String(lap).padStart(2,'0')}<em>/ 03</em>`;$('#driftValue').innerHTML=`${Math.round(race.drift*100)}<em>%</em>`;$('#trackFill').style.width=`${progress*100}%`;$('#distanceValue').textContent=`${(progress*trackLength/1000).toFixed(1).padStart(4,'0')} KM`;$('#nitroFill').style.width=`${race.nitro*100}%`;$('#nitroValue').textContent=`${Math.round(race.nitro*100)}%`};
+    function resize(){const r=$('#game').getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe($('#game'));resize();
+    function animate(now){
+      requestAnimationFrame(animate);
+      const dt=Math.min((now-last)/1000,.05);
+      last=now;
+      if(!paused){
+        elapsed+=dt;
+        const wasMoving=race.speed>3;
+        race=stepRace(race,input,dt);
+        if(input.accelerate&&!started){
+          started=true;
+          $('#mission').classList.remove('show');
+          notify('出发！漂移过弯可积攒能量');
+        }
+        const distance=race.speed*dt;
+        const previousProgress=progress;
+        progress=(progress+distance/trackLength)%1;
+        if(previousProgress>.8&&progress<.03&&wasMoving){
+          lap++;
+          if(lap>3){
+            lap=3;
+            paused=true;
+            $('#missionTitle').textContent='FINISH';
+            $('#missionSub').textContent='按 R 再来一圈';
+            $('#mission').classList.add('show');
+            notify('完成三圈！');
+          }
+        }
+        const t=safeTrackT(progress);
+        const center=trackCurve.getPointAt(t);
+        const tangent=trackCurve.getTangentAt(t).normalize();
+        const side=new THREE.Vector3(-tangent.z,0,tangent.x);
+        const lane=clamp(race.lateral,-1.3,1.3);
+        car.position.copy(center).addScaledVector(side,lane);
+        car.position.y=.1;
+        const roadYaw=Math.atan2(tangent.x,tangent.z);
+        car.rotation.y=roadYaw+race.heading*.13;
+        car.rotation.z=clamp(-race.lateral*.12,-.18,.18);
+        for(const wheel of car.children){
+          if(wheel.geometry?.type==='CylinderGeometry') wheel.rotation.x-=race.speed*dt*1.8;
+        }
+        flameGroup.children.forEach(flame=>flame.visible=race.boosting);
+        if(race.boosting){
+          flameGroup.scale.y=.8+Math.sin(elapsed*35)*.18;
+          flameGroup.rotation.z=Math.sin(elapsed*18)*.025;
+        }
+        const mobileCamera=innerWidth<700;
+        const followDistance=mobileCamera?11:8;
+        const followHeight=mobileCamera?6.1:4.5;
+        camera.position.lerp(new THREE.Vector3(car.position.x-tangent.x*followDistance,followHeight,car.position.z-tangent.z*followDistance),.07);
+        camera.lookAt(car.position.x+tangent.x*(mobileCamera?4:5),mobileCamera?1.2:1,car.position.z+tangent.z*(mobileCamera?4:5));
+        if(engine&&audioOn){
+          const oscillator=engine.createOscillator();
+          const gain=engine.createGain();
+          oscillator.type='sawtooth';
+          oscillator.frequency.value=65+race.speed*3.2;
+          gain.gain.setValueAtTime(.0001,engine.currentTime);
+          gain.gain.exponentialRampToValueAtTime(.18,engine.currentTime+.01);
+          gain.gain.exponentialRampToValueAtTime(.0001,engine.currentTime+.08);
+          oscillator.connect(gain);gain.connect(engineGain);
+          oscillator.start();oscillator.stop(engine.currentTime+.09);
+        }
+      }
+      updateUI();
+      renderer.render(scene,camera);
+    }
+    $('#mission').classList.add('show');
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
