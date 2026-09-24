@@ -26,21 +26,9 @@ games/<project>/latest/   # 当前推荐版本入口，跳转到最新稳定版�
 1. 复制上一版本到新的 `vN/` 目录并实现改动。
 2. 验证新版本后，将 `latest/index.html` 的跳转目标更新到新的版本目录。
 3. 在根目录 `index.html` 对应项目卡片中增加 `vN` 链接，并保留 `CURRENT / latest` 链接。
-4. 保留旧版本目录和旧入口，保证历史链接、回归验证和回滚能力。
+4. 保留旧版本目录，保证回归验证和回滚能力。根目录不保留项目 HTML、JS 或兼容跳转文件。
 
 `latest/` 是可变别名，`vN/` 是不可变版本。任何已经发布的 `vN/` 目录不得被后续版本覆盖。
-
-## 兼容入口
-
-历史根路径仍保留跳转页，例如：
-
-```text
-/pelican-ride.html
-/qq-speed-rush.html
-/transport-ship.html
-```
-
-这些入口跳转到对应项目的 `latest/`，用于兼容已经分享出去的旧链接。新链接应优先使用 `/games/<project>/latest/` 或具体 `/games/<project>/vN/` 路径。
 
 当前项目：
 
